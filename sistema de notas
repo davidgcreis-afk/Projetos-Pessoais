@@ -1,0 +1,45 @@
+#Você foi contratado para desenvolver um sistema simples de gestão de notas de alunos. O sistema
+#deve permitir que o usuário adicione notas, calcule a média das notas, determine a situação do
+#aluno (aprovado ou reprovado), e exiba um relatório final. Utilize estruturas condicionais, de
+#repetição e funções.
+#Cadastro de Notas:
+#• O sistema deve permitir que o usuário insira as notas dos alunos.
+#• As notas devem ser armazenadas em uma lista.
+#Cálculo da Média:
+#• O sistema deve calcular a média das notas inseridas.
+#Determinação da Situação:
+#• Se a média for maior ou igual a 7, o aluno está aprovado.
+#• Se a média for menor que 7, o aluno está reprovado.
+
+notas = [] #Lista para armazenar as notas
+def adicionar_nota(nota): # Função para adicionar nota à lista
+    notas.append(nota)
+def calcular_media(): # Função para calcular a média das notas
+    if len(notas) == 0:
+        return 0
+    return sum(notas) / len(notas)
+def determinar_situacao(media): # Função para determinar a situação do aluno
+    if media >= 7: 
+        return "Aprovado" 
+    else:
+        return "Reprovado"
+def exibir_relatorio(): # Função para exibir o relatório final
+    media = calcular_media()
+    situacao = determinar_situacao(media)
+    print("Relatório Final:")
+    print("Notas:", notas)
+    print("Média:", media)
+    print("Situação:", situacao)
+while True: # Loop para entrada de notas
+    entrada = input("Digite uma nota (ou 'sair' para finalizar): ")
+    if entrada.lower() == 'sair':
+        break # Encerra o loop se o usuário digitar 'sair'
+    try:
+        nota = float(entrada)
+        if 0 <= nota <= 10:
+            adicionar_nota(nota) # Adiciona a nota se for válida
+        else:
+            print("Por favor, insira uma nota válida entre 0 e 10.")
+    except ValueError:
+        print("Entrada inválida. Por favor, insira um número.")
+exibir_relatorio() # Exibe o relatório final
