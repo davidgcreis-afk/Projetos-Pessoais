@@ -3,7 +3,12 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
+from kivy.graphics import Color, Rectangle
 import sqlite3
+
+""" A simple Kivy app with user authentication """
+
+
 
 class SimpleApp(App):
     # Simple user database (for demonstration purposes) - not secure
@@ -16,9 +21,14 @@ class SimpleApp(App):
         self.cursor.execute('SELECT * FROM users WHERE username=? AND password=?', (username, password))
         return self.cursor.fetchone() is not None
 
-
+    """ Build the UI layout """
     def build(self):
         layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
+        with layout.canvas.before:
+            Color(0.2, 0.6, 0.8, 1)  # Example: light blue background (RGBA)
+            self.rect = Rectangle(size=layout.size, pos=layout.pos)
+        layout.bind(size=lambda instance, value: setattr(self.rect, 'size', value))
+        layout.bind(pos=lambda instance, value: setattr(self.rect, 'pos', value))
         self.label = Label(text="Hello, World!", font_size=32)
         layout.add_widget(self.label)
         layout.add_widget(Label(text="Enter your username:", font_size=18))
@@ -28,17 +38,37 @@ class SimpleApp(App):
         self.password_input = TextInput(hint_text="Password", size_hint=(1, 0.4), password=True)
         layout.add_widget(self.password_input)
         login_btn = Button(text="Login", size_hint=(1, 0.3))
+         # Make Enter key trigger login for both input boxes
+        self.username_input.bind(on_text_validate=lambda instance: login_btn.trigger_action(duration=0.1))
+        self.password_input.bind(on_text_validate=lambda instance: login_btn.trigger_action(duration=0.1))
+        # Prevent multiline input
+        self.username_input.multiline = False
+        self.password_input.multiline = False
         login_btn.bind(on_press=self.login)
         layout.add_widget(login_btn)
         layout.add_widget(Label(text="Welcome to my Kivy App!", font_size=24))
         layout.add_widget(Label(text="This is a simple Kivy app.", font_size=20))
         return layout
+    
+        # Now, I need to add another page to the app that will be displayed after a successful login.
+        
+        
+
+    """ Handle login button press event """
 
     def login(self, instance):
         username = self.username_input.text
         password = self.password_input.text
+       
         if self.authenticate(username, password):
             self.label.text = "Login successful!"
+            self.root.clear_widgets()
+            self.success_layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
+            self.success_label = Label(text="Login successful!", font_size=32)
+            self.success_layout.add_widget(self.success_label)
+            self.success_layout.add_widget(Label(text="Welcome to the app!", font_size=24))
+            self.success_layout.add_widget(Label(text="This is a protected area.", font_size=20))
+            self.root.add_widget(self.success_layout)
         else:
             self.label.text = "Login failed!"
 
